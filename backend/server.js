@@ -115,8 +115,30 @@
 // app.listen(process.env.PORT || 3000, () => {
 //     console.log("🚀 Professional Loan Risk API Running");
 // });
+require('dotenv').config();
+
+const express = require('express');
+const db = require('./db');
+const path = require('path');
+
+const app = express();   // ✅ VERY IMPORTANT
+
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
+
+/* ===============================
+   ROOT ROUTE
+================================= */
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+/* ===============================
+   APPLY LOAN (PROFESSIONAL)
+================================= */
 app.post('/apply-loan', async (req, res) => {
   try {
+
     const {
       full_name,
       age,
@@ -131,14 +153,14 @@ app.post('/apply-loan', async (req, res) => {
     if (
       !full_name || !age || !monthly_income ||
       !employment_type || !credit_score ||
-      loan_amount == null || tenure_months == null
+      !loan_amount || !tenure_months
     ) {
       return res.status(400).json({
         error: "All fields are required"
       });
     }
 
-    // 1️⃣ Insert Customer
+    // Insert Customer
     const [customerResult] = await db.query(
       `INSERT INTO customers 
        (full_name, email, phone, age, employment_status, 
@@ -159,7 +181,7 @@ app.post('/apply-loan', async (req, res) => {
 
     const customer_id = customerResult.insertId;
 
-    // 2️⃣ Insert Loan (Trigger will calculate risk automatically)
+    // Insert Loan
     const [loanResult] = await db.query(
       `INSERT INTO loans 
        (customer_id, loan_amount, tenure_months)
@@ -169,7 +191,7 @@ app.post('/apply-loan', async (req, res) => {
 
     const loan_id = loanResult.insertId;
 
-    // 3️⃣ Fetch Decision
+    // Fetch Status
     const [loanData] = await db.query(
       `SELECT status, risk_score 
        FROM loans 
@@ -178,7 +200,6 @@ app.post('/apply-loan', async (req, res) => {
     );
 
     res.status(201).json({
-      message: "Loan Application Submitted",
       status: loanData[0].status,
       risk_score: loanData[0].risk_score
     });
@@ -189,4 +210,13 @@ app.post('/apply-loan', async (req, res) => {
       error: error.message
     });
   }
+});
+
+/* ===============================
+   START SERVER
+================================= */
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
