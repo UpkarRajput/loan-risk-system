@@ -86,11 +86,11 @@
 // app.listen(process.env.PORT || 3000, () => {
 //   console.log("🚀 Server running...");
 // });
-
 require('dotenv').config();
+
 const express = require('express');
 const db = require('./db');
-const path = require('path');
+const path = require('path');   // ✅ ONLY ONE TIME
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -99,12 +99,10 @@ const PORT = process.env.PORT || 3000;
    MIDDLEWARE
 ================================= */
 app.use(express.json());
-
-// Serve static files from public folder
 app.use(express.static(path.join(__dirname, "public")));
 
 /* ===============================
-   ROOT ROUTE (Loads Frontend)
+   ROOT ROUTE
 ================================= */
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
