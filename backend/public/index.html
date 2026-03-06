@@ -1,88 +1,130 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 <head>
-  <title>Loan Risk System</title>
-  <style>
-    body {
-      font-family: Arial;
-      background: #f4f6f9;
-      text-align: center;
-      padding-top: 50px;
-    }
-    .container {
-      background: white;
-      width: 400px;
-      margin: auto;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    }
-    input {
-      width: 90%;
-      padding: 10px;
-      margin: 10px 0;
-    }
-    button {
-      width: 95%;
-      padding: 10px;
-      background: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    #result {
-      margin-top: 20px;
-      font-weight: bold;
-    }
-  </style>
+    <title>Professional Loan Risk System</title>
+    <style>
+        body { font-family: Arial; background: #f4f6f9; text-align: center; }
+        .card { width: 400px; margin: 50px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input, select { width: 100%; padding: 10px; margin: 8px 0; }
+        button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; }
+        .result { margin-top: 15px; font-weight: bold; }
+    </style>
 </head>
 <body>
 
-<div class="container">
-  <h2>Loan Eligibility Checker</h2>
+<div class="card">
+    <h2>Loan Eligibility Checker</h2>
 
-  <input type="number" id="customer_id" placeholder="Customer ID">
-  <input type="number" id="loan_amount" placeholder="Loan Amount">
-  <input type="number" id="tenure_months" placeholder="Tenure (Months)">
+    <input type="text" id="full_name" placeholder="Full Name">
+    <input type="number" id="age" placeholder="Age">
+    <input type="number" id="monthly_income" placeholder="Monthly Income">
+    
+    <select id="employment_type">
+        <option value="Salaried">Salaried</option>
+        <option value="Business">Business</option>
+        <option value="Self-Employed">Self-Employed</option>
+        <option value="Student">Student</option>
+    </select>
 
-  <button onclick="applyLoan()">Check Loan</button>
+    <input type="number" id="credit_score" placeholder="Credit Score">
+    <input type="number" id="existing_loans" placeholder="Existing Loans">
+    <input type="number" id="loan_amount" placeholder="Loan Amount">
+    <input type="number" id="tenure_months" placeholder="Tenure (Months)">
 
-  <div id="result"></div>
+    <button onclick="applyLoan()">Check Eligibility</button>
+
+    <div class="result" id="result"></div>
 </div>
 
 <script>
 async function applyLoan() {
-  const customer_id = document.getElementById("customer_id").value;
-  const loan_amount = document.getElementById("loan_amount").value;
-  const tenure_months = document.getElementById("tenure_months").value;
+    const data = {
+        full_name: document.getElementById('full_name').value,
+        age: parseInt(document.getElementById('age').value),
+        monthly_income: parseFloat(document.getElementById('monthly_income').value),
+        employment_type: document.getElementById('employment_type').value,
+        credit_score: parseInt(document.getElementById('credit_score').value),
+        existing_loans: parseInt(document.getElementById('existing_loans').value),
+        loan_amount: parseFloat(document.getElementById('loan_amount').value),
+        tenure_months: parseInt(document.getElementById('tenure_months').value)
+    };
 
-  const response = await fetch("/apply-loan", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      customer_id: Number(customer_id),
-      loan_amount: Number(loan_amount),
-      tenure_months: Number(tenure_months)
-    })
-  });
+    const response = await fetch('/apply-loan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
 
-  const data = await response.json();
+    const result = await response.json();
 
-  if (data.status === "APPROVED") {
-    document.getElementById("result").innerHTML =
-      "✅ Loan Approved<br>Risk Score: " + data.risk_score;
-  } else if (data.status === "REJECTED") {
-    document.getElementById("result").innerHTML =
-      "❌ Loan Rejected<br>Risk Score: " + data.risk_score;
-  } else {
-    document.getElementById("result").innerHTML =
-      "⚠ " + (data.error || data.message);
-  }
+    document.getElementById('result').innerHTML =
+        `Status: ${result.status} <br> Risk Score: ${result.risk_score}`;
+}
+</script>
+
+</body>
+</html> -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Professional Loan Risk System</title>
+    <style>
+        body { font-family: Arial; background: #f4f6f9; text-align: center; }
+        .card { width: 400px; margin: 50px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input, select { width: 100%; padding: 10px; margin: 8px 0; }
+        button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; }
+        .result { margin-top: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Loan Eligibility Checker</h2>
+
+    <input type="text" id="full_name" placeholder="Full Name">
+    <input type="number" id="age" placeholder="Age">
+    <input type="number" id="monthly_income" placeholder="Monthly Income">
+    
+    <select id="employment_type">
+        <option value="Salaried">Salaried</option>
+        <option value="Business">Business</option>
+        <option value="Self-Employed">Self-Employed</option>
+        <option value="Student">Student</option>
+    </select>
+
+    <input type="number" id="credit_score" placeholder="Credit Score">
+    <input type="number" id="existing_loans" placeholder="Existing Loans">
+    <input type="number" id="loan_amount" placeholder="Loan Amount">
+    <input type="number" id="tenure_months" placeholder="Tenure (Months)">
+
+    <button onclick="applyLoan()">Check Eligibility</button>
+
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+async function applyLoan() {
+    const data = {
+        full_name: document.getElementById('full_name').value,
+        age: parseInt(document.getElementById('age').value),
+        monthly_income: parseFloat(document.getElementById('monthly_income').value),
+        employment_type: document.getElementById('employment_type').value,
+        credit_score: parseInt(document.getElementById('credit_score').value),
+        existing_loans: parseInt(document.getElementById('existing_loans').value),
+        loan_amount: parseFloat(document.getElementById('loan_amount').value),
+        tenure_months: parseInt(document.getElementById('tenure_months').value)
+    };
+
+    const response = await fetch('/apply-loan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    document.getElementById('result').innerHTML =
+        `Status: ${result.status} <br> Risk Score: ${result.risk_score}`;
 }
 </script>
 
