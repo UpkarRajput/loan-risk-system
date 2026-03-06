@@ -86,17 +86,29 @@
 // app.listen(process.env.PORT || 3000, () => {
 //   console.log("🚀 Server running...");
 // });
+
 require('dotenv').config();
 const express = require('express');
 const db = require('./db');
 const path = require('path');
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
+/* ===============================
+   MIDDLEWARE
+================================= */
 app.use(express.json());
 
-// ✅ Serve frontend from /public folder
+// Serve static files from public folder
 app.use(express.static(path.join(__dirname, "public")));
+
+/* ===============================
+   ROOT ROUTE (Loads Frontend)
+================================= */
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 /* ===============================
    APPLY LOAN
@@ -129,8 +141,9 @@ app.post('/apply-loan', async (req, res) => {
     });
 
   } catch (error) {
+    console.error(error);
     res.status(500).json({
-      error: error.message
+      error: "Server Error"
     });
   }
 });
@@ -154,8 +167,9 @@ app.get('/loan/:id', async (req, res) => {
     res.json(rows[0]);
 
   } catch (error) {
+    console.error(error);
     res.status(500).json({
-      error: error.message
+      error: "Server Error"
     });
   }
 });
@@ -163,6 +177,6 @@ app.get('/loan/:id', async (req, res) => {
 /* ===============================
    START SERVER
 ================================= */
-app.listen(process.env.PORT || 3000, () => {
-  console.log("🚀 Server running...");
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
