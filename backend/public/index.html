@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Loan Risk System</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f6f9;
+      text-align: center;
+      padding-top: 50px;
+    }
+    .container {
+      background: white;
+      width: 400px;
+      margin: auto;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    button {
+      width: 95%;
+      padding: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Loan Eligibility Checker</h2>
+
+  <input type="number" id="customer_id" placeholder="Customer ID">
+  <input type="number" id="loan_amount" placeholder="Loan Amount">
+  <input type="number" id="tenure_months" placeholder="Tenure (Months)">
+
+  <button onclick="applyLoan()">Check Loan</button>
+
+  <div id="result"></div>
+</div>
+
+<script>
+async function applyLoan() {
+  const customer_id = document.getElementById("customer_id").value;
+  const loan_amount = document.getElementById("loan_amount").value;
+  const tenure_months = document.getElementById("tenure_months").value;
+
+  const response = await fetch("/apply-loan", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      customer_id: Number(customer_id),
+      loan_amount: Number(loan_amount),
+      tenure_months: Number(tenure_months)
+    })
+  });
+
+  const data = await response.json();
+
+  if (data.status === "APPROVED") {
+    document.getElementById("result").innerHTML =
+      "✅ Loan Approved<br>Risk Score: " + data.risk_score;
+  } else if (data.status === "REJECTED") {
+    document.getElementById("result").innerHTML =
+      "❌ Loan Rejected<br>Risk Score: " + data.risk_score;
+  } else {
+    document.getElementById("result").innerHTML =
+      "⚠ " + (data.error || data.message);
+  }
+}
+</script>
+
+</body>
+</html>
