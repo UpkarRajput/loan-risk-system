@@ -1,105 +1,175 @@
+// require('dotenv').config();
+
+// const express = require('express');
+// const db = require('./db');
+// const path = require('path');
+
+// const app = express();   // ✅ VERY IMPORTANT
+
+// app.use(express.json());
+// app.use(express.static(path.join(__dirname, "public")));
+
+// /* ===============================
+//    ROOT ROUTE
+// ================================= */
+// app.get("/", (req, res) => {
+//   res.sendFile(path.join(__dirname, "public", "index.html"));
+// });
+
+// /* ===============================
+//    APPLY LOAN (PROFESSIONAL)
+// ================================= */
+// app.post('/apply-loan', async (req, res) => {
+//   try {
+
+//     const {
+//       full_name,
+//       age,
+//       monthly_income,
+//       employment_type,
+//       credit_score,
+//       existing_loans,
+//       loan_amount,
+//       tenure_months
+//     } = req.body;
+
+//     if (
+//       !full_name || !age || !monthly_income ||
+//       !employment_type || !credit_score ||
+//       !loan_amount || !tenure_months
+//     ) {
+//       return res.status(400).json({
+//         error: "All fields are required"
+//       });
+//     }
+
+//     // Insert Customer
+//     const [customerResult] = await db.query(
+//       `INSERT INTO customers 
+//        (full_name, email, phone, age, employment_status, 
+//         monthly_income, annual_income, credit_score, existing_loans)
+//        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+//       [
+//         full_name,
+//         `${full_name.replace(/\s+/g, '').toLowerCase()}@demo.com`,
+//         "9999999999",
+//         age,
+//         employment_type,
+//         monthly_income,
+//         monthly_income * 12,
+//         credit_score,
+//         existing_loans || 0
+//       ]
+//     );
+
+//     const customer_id = customerResult.insertId;
+
+//     // Insert Loan
+//     const [loanResult] = await db.query(
+//       `INSERT INTO loans 
+//        (customer_id, loan_amount, tenure_months)
+//        VALUES (?, ?, ?)`,
+//       [customer_id, loan_amount, tenure_months]
+//     );
+
+//     const loan_id = loanResult.insertId;
+
+//     // Fetch Status
+//     const [loanData] = await db.query(
+//       `SELECT status, risk_score 
+//        FROM loans 
+//        WHERE loan_id = ?`,
+//       [loan_id]
+//     );
+
+//     res.status(201).json({
+//       status: loanData[0].status,
+//       risk_score: loanData[0].risk_score
+//     });
+
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({
+//       error: error.message
+//     });
+//   }
+// });
+
+// /* ===============================
+//    START SERVER
+// ================================= */
+// const PORT = process.env.PORT || 3000;
+
+// app.listen(PORT, () => {
+//   console.log(`🚀 Server running on port ${PORT}`);
+// });
+// backend/server.js
+const express = require('express');
+const cors = require('cors');
+const db = require('./db');
 require('dotenv').config();
 
-const express = require('express');
-const db = require('./db');
-const path = require('path');
+const app = express();
 
-const app = express();   // ✅ VERY IMPORTANT
+// Middleware
+app.use(cors());
+app.use(express.json()); // Allows us to read JSON data from the frontend
+app.use(express.static('public')); // Serves your index.html file
 
-app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
-
-/* ===============================
-   ROOT ROUTE
-================================= */
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-/* ===============================
-   APPLY LOAN (PROFESSIONAL)
-================================= */
-app.post('/apply-loan', async (req, res) => {
-  try {
-
-    const {
-      full_name,
-      age,
-      monthly_income,
-      employment_type,
-      credit_score,
-      existing_loans,
-      loan_amount,
-      tenure_months
+// The Loan Application Endpoint
+app.post('/api/apply-loan', async (req, res) => {
+    // 1. Destructure the incoming data from the frontend form
+    const { 
+        fullName, email, phone, age, employmentStatus, 
+        monthlyIncome, creditScore, existingLoans, 
+        loanAmount, tenureMonths 
     } = req.body;
 
-    if (
-      !full_name || !age || !monthly_income ||
-      !employment_type || !credit_score ||
-      !loan_amount || !tenure_months
-    ) {
-      return res.status(400).json({
-        error: "All fields are required"
-      });
+    try {
+        // 2. Insert the Customer into the database
+        const [customerResult] = await db.execute(
+            `INSERT INTO customers 
+            (full_name, email, phone, age, employment_status, monthly_income, credit_score, existing_loans) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [fullName, email, phone, age, employmentStatus, monthlyIncome, creditScore, existingLoans]
+        );
+        
+        const customerId = customerResult.insertId;
+
+        // 3. Insert the Loan details (This action fires your SQL Trigger!)
+        const [loanResult] = await db.execute(
+            `INSERT INTO loans (customer_id, loan_amount, tenure_months) 
+            VALUES (?, ?, ?)`,
+            [customerId, loanAmount, tenureMonths]
+        );
+        
+        const loanId = loanResult.insertId;
+
+        // 4. Fetch the final decision generated by the Trigger
+        const [decisionData] = await db.execute(
+            `SELECT status, risk_score FROM loans WHERE loan_id = ?`,
+            [loanId]
+        );
+
+        // 5. Send the result back to the frontend
+        res.status(200).json({
+            success: true,
+            message: "Application processed successfully",
+            decision: decisionData[0] // Contains { status: 'APPROVED', risk_score: 85 }
+        });
+
+    } catch (error) {
+        console.error("Error processing loan:", error);
+        // Handle duplicate email error gracefully
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({ success: false, message: "Email already exists in the system." });
+        }
+        res.status(500).json({ success: false, message: "Internal Server Error" });
     }
-
-    // Insert Customer
-    const [customerResult] = await db.query(
-      `INSERT INTO customers 
-       (full_name, email, phone, age, employment_status, 
-        monthly_income, annual_income, credit_score, existing_loans)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        full_name,
-        `${full_name.replace(/\s+/g, '').toLowerCase()}@demo.com`,
-        "9999999999",
-        age,
-        employment_type,
-        monthly_income,
-        monthly_income * 12,
-        credit_score,
-        existing_loans || 0
-      ]
-    );
-
-    const customer_id = customerResult.insertId;
-
-    // Insert Loan
-    const [loanResult] = await db.query(
-      `INSERT INTO loans 
-       (customer_id, loan_amount, tenure_months)
-       VALUES (?, ?, ?)`,
-      [customer_id, loan_amount, tenure_months]
-    );
-
-    const loan_id = loanResult.insertId;
-
-    // Fetch Status
-    const [loanData] = await db.query(
-      `SELECT status, risk_score 
-       FROM loans 
-       WHERE loan_id = ?`,
-      [loan_id]
-    );
-
-    res.status(201).json({
-      status: loanData[0].status,
-      risk_score: loanData[0].risk_score
-    });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      error: error.message
-    });
-  }
 });
 
-/* ===============================
-   START SERVER
-================================= */
+// Start the server
 const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`Server is running on http://localhost:${PORT}`);
 });

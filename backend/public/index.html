@@ -1,132 +1,164 @@
-<!-- <!DOCTYPE html>
-<html>
-<head>
-    <title>Professional Loan Risk System</title>
-    <style>
-        body { font-family: Arial; background: #f4f6f9; text-align: center; }
-        .card { width: 400px; margin: 50px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        input, select { width: 100%; padding: 10px; margin: 8px 0; }
-        button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; }
-        .result { margin-top: 15px; font-weight: bold; }
-    </style>
-</head>
-<body>
-
-<div class="card">
-    <h2>Loan Eligibility Checker</h2>
-
-    <input type="text" id="full_name" placeholder="Full Name">
-    <input type="number" id="age" placeholder="Age">
-    <input type="number" id="monthly_income" placeholder="Monthly Income">
-    
-    <select id="employment_type">
-        <option value="Salaried">Salaried</option>
-        <option value="Business">Business</option>
-        <option value="Self-Employed">Self-Employed</option>
-        <option value="Student">Student</option>
-    </select>
-
-    <input type="number" id="credit_score" placeholder="Credit Score">
-    <input type="number" id="existing_loans" placeholder="Existing Loans">
-    <input type="number" id="loan_amount" placeholder="Loan Amount">
-    <input type="number" id="tenure_months" placeholder="Tenure (Months)">
-
-    <button onclick="applyLoan()">Check Eligibility</button>
-
-    <div class="result" id="result"></div>
-</div>
-
-<script>
-async function applyLoan() {
-    const data = {
-        full_name: document.getElementById('full_name').value,
-        age: parseInt(document.getElementById('age').value),
-        monthly_income: parseFloat(document.getElementById('monthly_income').value),
-        employment_type: document.getElementById('employment_type').value,
-        credit_score: parseInt(document.getElementById('credit_score').value),
-        existing_loans: parseInt(document.getElementById('existing_loans').value),
-        loan_amount: parseFloat(document.getElementById('loan_amount').value),
-        tenure_months: parseInt(document.getElementById('tenure_months').value)
-    };
-
-    const response = await fetch('/apply-loan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    });
-
-    const result = await response.json();
-
-    document.getElementById('result').innerHTML =
-        `Status: ${result.status} <br> Risk Score: ${result.risk_score}`;
-}
-</script>
-
-</body>
-</html> -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Professional Loan Risk System</title>
-    <style>
-        body { font-family: Arial; background: #f4f6f9; text-align: center; }
-        .card { width: 400px; margin: 50px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        input, select { width: 100%; padding: 10px; margin: 8px 0; }
-        button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; }
-        .result { margin-top: 15px; font-weight: bold; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartRoute Financial - Loan Application</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex items-center justify-center p-6">
 
-<div class="card">
-    <h2>Loan Eligibility Checker</h2>
+    <div class="max-w-3xl w-full bg-white rounded-xl shadow-lg p-8">
+        
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-blue-600">AI-Driven Loan Portal</h1>
+            <p class="text-gray-500 mt-2">Instant Decision & Risk Assessment System</p>
+        </div>
 
-    <input type="text" id="full_name" placeholder="Full Name">
-    <input type="number" id="age" placeholder="Age">
-    <input type="number" id="monthly_income" placeholder="Monthly Income">
-    
-    <select id="employment_type">
-        <option value="Salaried">Salaried</option>
-        <option value="Business">Business</option>
-        <option value="Self-Employed">Self-Employed</option>
-        <option value="Student">Student</option>
-    </select>
+        <form id="loanForm" class="space-y-6">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" id="fullName" required class="mt-1 block w-full rounded-md border-gray-300 border p-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input type="email" id="email" required class="mt-1 block w-full rounded-md border-gray-300 border p-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Phone Number</label>
+                    <input type="tel" id="phone" required class="mt-1 block w-full rounded-md border-gray-300 border p-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Age</label>
+                    <input type="number" id="age" min="18" max="65" required class="mt-1 block w-full rounded-md border-gray-300 border p-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
 
-    <input type="number" id="credit_score" placeholder="Credit Score">
-    <input type="number" id="existing_loans" placeholder="Existing Loans">
-    <input type="number" id="loan_amount" placeholder="Loan Amount">
-    <input type="number" id="tenure_months" placeholder="Tenure (Months)">
+            <hr class="border-gray-200">
 
-    <button onclick="applyLoan()">Check Eligibility</button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Employment Status</label>
+                    <select id="employmentStatus" class="mt-1 block w-full rounded-md border-gray-300 border p-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="Salaried">Salaried</option>
+                        <option value="Self-Employed">Self-Employed</option>
+                        <option value="Student">Student</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Monthly Income (₹)</label>
+                    <input type="number" id="monthlyIncome" min="1000" required class="mt-1 block w-full rounded-md border-gray-300 border p-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Credit Score (300-900)</label>
+                    <input type="number" id="creditScore" min="300" max="900" required class="mt-1 block w-full rounded-md border-gray-300 border p-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Number of Existing Loans</label>
+                    <input type="number" id="existingLoans" min="0" required class="mt-1 block w-full rounded-md border-gray-300 border p-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
 
-    <div class="result" id="result"></div>
-</div>
+            <hr class="border-gray-200">
 
-<script>
-async function applyLoan() {
-    const data = {
-        full_name: document.getElementById('full_name').value,
-        age: parseInt(document.getElementById('age').value),
-        monthly_income: parseFloat(document.getElementById('monthly_income').value),
-        employment_type: document.getElementById('employment_type').value,
-        credit_score: parseInt(document.getElementById('credit_score').value),
-        existing_loans: parseInt(document.getElementById('existing_loans').value),
-        loan_amount: parseFloat(document.getElementById('loan_amount').value),
-        tenure_months: parseInt(document.getElementById('tenure_months').value)
-    };
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Requested Loan Amount (₹)</label>
+                    <input type="number" id="loanAmount" min="5000" required class="mt-1 block w-full rounded-md border-gray-300 border p-2 text-blue-600 font-bold focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Tenure (Months)</label>
+                    <input type="number" id="tenureMonths" min="6" max="120" required class="mt-1 block w-full rounded-md border-gray-300 border p-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
 
-    const response = await fetch('/apply-loan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    });
+            <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-md hover:bg-blue-700 transition duration-300 flex justify-center items-center">
+                <span>Process Loan Application</span>
+            </button>
+        </form>
 
-    const result = await response.json();
+        <div id="resultCard" class="hidden mt-8 p-6 rounded-lg text-center border-2">
+            <h2 id="resultStatus" class="text-2xl font-extrabold mb-2"></h2>
+            <p id="resultScore" class="text-lg text-gray-700 font-medium"></p>
+            <p id="resultMessage" class="text-sm text-gray-500 mt-2"></p>
+        </div>
 
-    document.getElementById('result').innerHTML =
-        `Status: ${result.status} <br> Risk Score: ${result.risk_score}`;
-}
-</script>
+    </div>
 
+    <script>
+        document.getElementById('loanForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Prevent page refresh
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const resultCard = document.getElementById('resultCard');
+            
+            // Visual feedback while loading
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = "Processing via AI Risk Engine...";
+            submitBtn.classList.add('opacity-70');
+            resultCard.classList.add('hidden');
+
+            // Gather all data from the form
+            const formData = {
+                fullName: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                age: document.getElementById('age').value,
+                employmentStatus: document.getElementById('employmentStatus').value,
+                monthlyIncome: document.getElementById('monthlyIncome').value,
+                creditScore: document.getElementById('creditScore').value,
+                existingLoans: document.getElementById('existingLoans').value,
+                loanAmount: document.getElementById('loanAmount').value,
+                tenureMonths: document.getElementById('tenureMonths').value
+            };
+
+            try {
+                // Send the data to your Node.js backend
+                const response = await fetch('/api/apply-loan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const status = data.decision.status;
+                    const score = data.decision.risk_score;
+
+                    // Update UI based on the database decision
+                    const statusEl = document.getElementById('resultStatus');
+                    
+                    if (status === 'APPROVED') {
+                        resultCard.className = "mt-8 p-6 rounded-lg text-center border-2 border-green-500 bg-green-50";
+                        statusEl.className = "text-2xl font-extrabold mb-2 text-green-600";
+                        statusEl.innerText = "Loan Approved!";
+                    } else {
+                        resultCard.className = "mt-8 p-6 rounded-lg text-center border-2 border-red-500 bg-red-50";
+                        statusEl.className = "text-2xl font-extrabold mb-2 text-red-600";
+                        statusEl.innerText = "Application Declined";
+                    }
+
+                    document.getElementById('resultScore').innerText = `System Risk Score: ${score} / 100`;
+                    document.getElementById('resultMessage').innerText = "Decision logged securely in Railway MySQL database.";
+                    resultCard.classList.remove('hidden');
+                    
+                } else {
+                    alert("Error: " + data.message);
+                }
+
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                alert("Failed to connect to the server. Is your Node backend running?");
+            } finally {
+                // Reset button state
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = "Process Another Application";
+                submitBtn.classList.remove('opacity-70');
+            }
+        });
+    </script>
 </body>
 </html>
