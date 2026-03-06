@@ -4,7 +4,7 @@
 ![Version](https://img.shields.io/badge/Version-1.0-blue)
 ![Database](https://img.shields.io/badge/Database-MySQL_Heavy-orange)
 
-**Live Demo:** [https://upkar-loan-risk-api.onrender.com]
+**Live Demo:** https://upkar-loan-risk-api.onrender.com
 
 ## 📌 Overview
 The **Automated Loan Approval & Risk Assessment System** is a full-stack fintech web application designed to instantly evaluate loan applications. It processes user financial data, calculates a dynamic risk score using a custom rule-based engine, and automates the approval or rejection decision. 
